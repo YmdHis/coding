@@ -70,3 +70,5 @@ module.exports = {
 ###### 注意1：即使不设置targes，也会有一个默认值，规则为 > 0.5%, last 2 versions, Firefox ESR, not dead。
 
 **https://juejin.cn/post/6844903858632654856#heading-6**
+
+**https://juejin.cn/post/6906392940675874830#heading-7**
