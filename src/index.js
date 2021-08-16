@@ -153,3 +153,29 @@
 // }
 // var a = 2;
 // bar()
+
+
+
+//this
+
+global.count = 0;
+function foo(num) {
+  console.log( "foo: " + num );
+  this.count++;
+  console.log(this)
+}
+// foo.count = 0;
+var i;
+for (i=0; i<10; i++) {
+  if (i > 5) {
+    foo( i );
+  }
+}
+console.log(global.count)
+
+//在浏览器环境下 打印2，因为a定义在全局作用域中，就是全局对象的一个同名属性（非严格模式下）
+var a = 2;
+function foo(){
+  console.log('a',this.a)
+}
+foo()

@@ -1,0 +1,3 @@
+[submodule "code-sub-module"]
+	path = code-sub-module
+	url = https://github.com/YmdHis/code-sub-module.git
