@@ -158,24 +158,51 @@
 
 //this
 
-global.count = 0;
-function foo(num) {
-  console.log( "foo: " + num );
-  this.count++;
-  console.log(this)
-}
-// foo.count = 0;
-var i;
-for (i=0; i<10; i++) {
-  if (i > 5) {
-    foo( i );
-  }
-}
-console.log(global.count)
+// global.count = 0;
+// function foo(num) {
+//   console.log( "foo: " + num );
+//   this.count++;
+//   console.log(this)
+// }
+// // foo.count = 0;
+// var i;
+// for (i=0; i<10; i++) {
+//   if (i > 5) {
+//     foo( i );
+//   }
+// }
+// console.log(global.count)
 
-//在浏览器环境下 打印2，因为a定义在全局作用域中，就是全局对象的一个同名属性（非严格模式下）
-var a = 2;
-function foo(){
-  console.log('a',this.a)
+
+// //在浏览器环境下 打印2，因为a定义在全局作用域中，就是全局对象的一个同名属性（非严格模式下）
+// var a = 2;
+// function foo(){
+//   console.log('a',this.a)
+// }
+// foo()
+
+
+//对象属性引用链中只有最顶层或者说最后一层会影响调用位置。举例来说：
+// function foo() {
+// console.log( this.a );
+// }
+// var obj2 = {
+// a: 42,
+// foo: foo
+// };
+// var obj1 = {
+// a: 2,
+// obj2: obj2
+// };
+// obj1.obj2.foo(); // 42
+
+
+//间接引用  赋值表达式 p.foo = o.foo 的返回值是目标函数的引用，因此调用位置是 foo()。根据我们之前说过的，这里会应用默认绑定。
+function foo() {
+  console.log( this.a );
 }
-foo()
+var a = 2;
+var o = { a: 3, foo: foo };
+var p = { a: 4 };
+o.foo(); // 3
+(p.foo = o.foo)(); // 2
