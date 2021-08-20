@@ -198,11 +198,36 @@
 
 
 //间接引用  赋值表达式 p.foo = o.foo 的返回值是目标函数的引用，因此调用位置是 foo()。根据我们之前说过的，这里会应用默认绑定。
-function foo() {
-  console.log( this.a );
-}
-var a = 2;
-var o = { a: 3, foo: foo };
-var p = { a: 4 };
-o.foo(); // 3
-(p.foo = o.foo)(); // 2
+// function foo() {
+//   console.log( this.a );
+// }
+// var a = 2;
+// var o = { a: 3, foo: foo };
+// var p = { a: 4 };
+// o.foo(); // 3
+// (p.foo = o.foo)(); // 2
+
+// 这里做了个实验，此时的赋值表达式返回的是1
+// var o = {foo:1}
+// var p = {}
+// p.foo = o.foo
+
+
+
+var a = {name:'aaa'};
+var b = a;
+a.myName = a = { name: '你好'};
+console.log(a) // {name: '你好'}
+console.log(a.myName) // undefined
+console.log(b) // {name: 'aaa', myName:{name:'你好'}}
+console.log(b.myName) // {name: '你好'}
+
+//a,b都是引用类型，所以1，2行的a,b都是指向 {name:'aaa'}的这个对象的地址 假设这个地址是001
+
+//第三行，赋值操作，首先是从右往左。第一步，a = {name:'你好'}，把a指向的地址换成了这个 '你好' 假设是 002
+//第二步 a = {name: '你好'}这个赋值操作的返回值是{name:'你好'}，所以此时就是a.myName = {name:'你好'}。a.myName指向地址 002。
+//此时的这个a是指向最开始001那个地址的，也就是说，这一句赋值操作，改变了001地址的那个对象的内容，改为了{name: 'aaa', myName:{name:'你好'}}
+
+//第四行 ，此时的a被指向了002这个地址，所以有这个结果
+//第五行 a的内容是 {name: '你好'} ，没有myName这个属性，所以是undefined
+//第六行，第七行 b一直是指向 地址001   {name: 'aaa', myName:{name:'你好'}}
