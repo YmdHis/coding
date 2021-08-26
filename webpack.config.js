@@ -7,7 +7,7 @@ module.exports = {
   mode: 'development',
   devtool: 'inline-source-map',
   entry: {  // 入口文件
-    app: './src/index.js',
+    app: './src/index.ts',
   },
   output: {  // 编译打包后的文件名及所在路径
     filename: '[name].bundle.js',  // 打包输出的文件名字
@@ -34,6 +34,11 @@ module.exports = {
           },
         },
       },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      }
     ],
   },
   plugins: [// 插件
