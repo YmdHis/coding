@@ -27,6 +27,16 @@ function deepCloneJson(node, { keyLoader = null } = {}) {
   return newNode;
 }
 
+function isObject(ops){
+  if (typeof ops !== 'object' || `${ops}` === 'null') return false;
+  if(ops instanceof Array) return false;
+  return true;
+}
+// ['aaa',123,true,null, undefined, [], {}, isObject].forEach(item =>{
+//   console.log(isObject(item))
+// })
+
+
 
 
 const nodeobj = {
