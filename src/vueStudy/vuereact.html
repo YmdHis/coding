@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+  <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <title>Document</title>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+
+    class VueWrapper extends React.Component {
+      constructor(props) {
+        super(props)
+        this.currentVueComponent = props.component;
+      }
+
+      componentWillUnmount() {
+        this.vueInstance.$destroy()
+      }
+
+      createVueInstance = el => {
+        const { component, on, ...props } = this.props;
+        this.vueInstance = new Vue({
+          el,
+          data: props,
+          render(h){
+            const children = this.children;
+            return h(
+              'xxx-internal-component',
+              {
+                props: this.$data,
+                on
+              },
+              [
+                h(
+                  'yyy-internal-react-wrapper',
+                  {
+                    props: {
+                      component: () => React.createElement('div', {}, children)
+                    }
+                  }
+                )
+              ]
+            )
+          },
+          components: {
+            'xxx-internal-component': component,
+            'yyy-internal-react-wrapper': ReactWrapper
+          }
+        })
+      }
+
+      render() {
+        return React.createElement('div', { ref: this.createVueInstance })
+      }
+    }
+
+    // HOC
+    const makeReactComponent = component => {
+      return class ReactRunInVue extends React.Component {
+        static displayName = 'vue-react';
+        constructor(props) {
+          super(props);
+          this.state = {
+            ...props
+          }
+        }
+
+        wrappChildren(children) {
+          return {
+            render: h => h('div', children)
+          }
+        }
+
+        render() {
+          const { children, ...rest} = this.state;
+          const wrappedChildren = this.wrappChildren(children)
+          return React.createElement(
+            Component,
+            { ...rest },
+            children && React.createElement(VueWrapper, {component: wrappedChildren})
+          )
+        }
+      }
+    }
+
+    const ReactWrapper = {
+      props: ['component'],
+      render (h) {
+        return h('div', {ref: 'react'})
+      },
+      methods: {
+        // 在mount 之后，去渲染react组件到div上
+        // 核心就是这块
+        mountReactComponent(component) {
+          const Component = makeReactComponent(component);
+          const children = this.$slots.default !== void 0 ? {children: this.$slots.default} : {};
+          ReactDOM.render(
+            React.createElement(
+              Component,
+              {...this.$attrs, ...this.$listeners, ...children, ref: ref => {this.reactComponentRef = ref}}
+            ),
+            this.$refs.react
+          )
+        }
+      },
+      mounted() {
+        this.mountReactComponent(this.$props.component)
+      },
+      beforeDestroy() {
+        ReactDOM.unmountComponentAtNode(this.$refs.react)
+      },
+      inheritAttrs: false,
+      watch: {
+        $attrs:{
+          handler(){
+            this.reactComponentRef.setState({...this.$attrs})
+          },
+          deep: true
+        },
+        '$props.component': {
+          handler(newComponent) {
+            this.mountReactComponent(newComponent)
+          }
+        }
+
+      }
+    }
+
+
+    // 判断是不是react组件 ，此处取反判断是vue组件即可
+    const isReactComponents = component => {
+      return !(
+        typeof component === 'function' &&
+        component.prototype &&
+        (
+          component.prototype.constructor.super && component.prototype.constructor.super.isVue ||
+          component.prototype instanceof Vue
+        )
+      )
+    }
+
+    // 把react组件转为vue组件
+    const Resolver = component => {
+      return {
+        components: {
+          ReactWrapper
+        },
+        props: [],
+        inheritAttrs: false,
+        render (h) {
+          return h(
+            'react-wrapper',
+            {
+              props: { component },
+              attrs: this.$attrs,
+              on: this.$listeners,
+            }),
+            this.$slots.default
+        }
+      }
+    }
+
+    const ReactRunInVuePlugin = {
+      install(Vue, options) {
+        const originalComponentsOptionsMergeStrategies = Vue.config.optionMergeStrategies.components;
+        Vue.config.optionMergeStrategies.components = (parent, ...args) =>{
+          const mergedComponentsOptions = originalComponentsOptionsMergeStrategies(parent, ...args);
+          const wrappedComponents = mergedComponentsOptions
+          ? Object.entries(mergedComponentsOptions).reduce((acc, [k, v]) => ({
+            ...acc,
+            [k]: isReactComponents(v) ? Resolver(v) : v
+          }), {}) 
+          : mergedComponentsOptions;
+
+          return Object.assign(mergedComponentsOptions, wrappedComponents);
+        }
+
+        Vue.prototype.constructor.isVue = true;
+      }
+    }
+
+    //test
+    class Button extends React.Component {
+      render() {
+        return React.createElement('div', {}, [
+          React.createElement('h2', {}, this.props.children)
+        ])
+      }
+    }
+
+    Vue.use(ReactRunInVuePlugin);
+
+    new Vue({
+      el: document.querySelector('#root'),
+      template: `
+        <div>
+          <h1>Hello World</h1>
+          <el-button>
+            <span>click me </span>
+          </el-button>
+        </div>
+      `,
+      components: {
+        'el-button': Button
+      }
+    })
+  </script>
+</body>
+</html>

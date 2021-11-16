@@ -26,3 +26,11 @@ let obj = {
 }
 
 obj.created()
+
+
+document.addEventListener('touchstart', function () {
+  document.addEventListener('WeixinJSBridgeReady', function () {
+    const videoPlay = document.getElementById('mainVideo');
+    videoPlay.play();
+  }, false);
+});
