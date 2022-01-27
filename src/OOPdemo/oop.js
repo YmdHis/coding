@@ -25,9 +25,8 @@ const fun = new Foo()
   constructor
 
   fun.constructor只是通过默认的 [[Prototype]] 委托指向 Foo，这和“构造”毫无关系。
-  举例来说，Foo.prototype 的 .constructor 属性只是 Foo 函数在声明时的默认属性。如果
-  你创建了一个新对象并替换了函数默认的 .prototype 对象引用，那么新对象并不会自动获
-  得 .constructor 属性。
+  举例来说，Foo.prototype 的 .constructor 属性只是 Foo 函数在声明时的默认属性。
+  如果你创建了一个新对象并替换了函数默认的 .prototype 对象引用，那么新对象并不会自动获得 .constructor 属性。
 */
 
 function Foo() { /* .. */ }
