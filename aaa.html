@@ -63,7 +63,7 @@
     configId: 83,
     biz: "mip",
     bizCnName: "医保",
-    app: "healthcard",
+    app: "healthcard1",
     appCnName: "医保",
     server: "offlinepaymentnotify",
     serverCnName: "统一线下回流服务",
@@ -74,28 +74,70 @@
 ];
 
 function listToTree(dataMap) {
+  console.log(dataMap)
   const tree = [];
 
-  const temp = {};
-  dataMap.map(item => temp[item.biz] = item.bizCnName);
-  const bizList = Object.entries(temp).reduce((acc, cur)=> acc.concat({label: `${cur[0]}(${cur[1]})`, value: cur[0],children:[]}), []);
+  // const temp = {};
+  // dataMap.map(item => temp[item.biz] = item.bizCnName);
+  // const bizList = Object.entries(temp).reduce((acc, cur)=> acc.concat({label: `${cur[0]}(${cur[1]})`, value: cur[0],children:[]}), []);
 
   dataMap.forEach(data =>{
-    bizList.forEach(item =>{
-      if(data.biz == item.value){
-        item.children.push({label:`${data.app}(${data.appCnName})`,value:data.app,children:[]})
-      }
-    })
-    
-  })
+    if(tree.length === 0){
+      tree.push({label:data.bizCnName,value:data.biz,children:[]})
+    }
+    tree.forEach(treeItem => {
+      let bizArr = tree.map(e=>e.value) //tree里面所有的biz
+      if(data.biz === treeItem.value){
+        if(treeItem.children.length === 0){
+          treeItem.children.push({label:data.appCnName,value:data.app,children:[]})
+        }
 
-  console.log(bizList);
+        let appArr = treeItem.children.map(e=>e.value)
+        if(appArr.every(e=>e !== data.app)){
+          treeItem.children.push({label:data.appCnName,value:data.app,children:[]})
+        }
+        treeItem.children.forEach(child =>{
+          if(data.app === child.value){
+            if(child.children.length === 0){
+              child.children.push({label:data.serverCnName,value:data.server,configId:data.configId})
+            }
+
+            let serverArr = child.children.map(e=>e.value)
+            if(serverArr.every(e=>e !== data.server)){
+              child.children.push({label:data.serverCnName,value:data.server,configId:data.configId})
+            }
+          }
+        })
+      }
+
+      if(bizArr.every(e=>e !== data.biz)){
+        tree.push({label:data.bizCnName,value:data.biz,children:[]})
+      }
+    })    
+  })
 
   return tree;
 }
 
-// listToTree(list)
+function deepGui(data,tree,valKey,labelKey){
+  if(tree.length === 0){
+    tree.push({label:data[labelKey],value:data[valKey],children})
+  }
+  tree.forEach(item =>{
+    let tempArr = tree.map(e=>e.value)
+    if(data[valKey] === item.value){
+      deepGui()
+    }
+    if(tempArr.every(e !== data[valKey])){
+      tree.push({label:data.bizCnName,value:data.biz,children:[]})
+    }
+  })
+}
 
+
+console.log(listToTree(list))
+
+console.log(test())
 
 </script>
 </html>
