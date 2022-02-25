@@ -1,63 +1,15 @@
 const list = [
   {
     configId: 51,
-    biz: "th",
-    bizCnName: "腾讯健康",
-    app: "thvaccine",
-    appCnName: "疫苗",
-    server: "adultserver",
-    serverCnName: "首页",
+    biz: "biz",
+    bizCnName: "bizCnName",
+    app: "app",
+    appCnName: "appCnName",
+    server: "server",
+    serverCnName: "serverCnName",
     env: "pre",
-    file: "service",
-    fileCnName: "",
-  },
-  {
-    configId: 52,
-    biz: "th",
-    bizCnName: "腾讯健康",
-    app: "thvaccine",
-    appCnName: "疫苗",
-    server: "bizorderserver",
-    serverCnName: "商业疫苗订单",
-    env: "pre",
-    file: "pakcage",
-    fileCnName: "",
-  },
-  {
-    configId: 61,
-    biz: "mip",
-    bizCnName: "医保",
-    app: "healthcard",
-    appCnName: "医保",
-    server: "offlinepaymentnotify",
-    serverCnName: "统一线下回流服务",
-    env: "pre",
-    file: "UserService",
-    fileCnName: "",
-  },
-  {
-    configId: 81,
-    biz: "mip",
-    bizCnName: "医保",
-    app: "healthcard",
-    appCnName: "医保",
-    server: "offlinepaymentnotify",
-    serverCnName: "统一线下回流服务",
-    env: "pre",
-    file: "EventReportLogger",
-    fileCnName: "",
-  },
-  {
-    configId: 83,
-    biz: "mip",
-    bizCnName: "医保",
-    app: "healthcard",
-    appCnName: "医保",
-    server: "offlinepaymentnotify",
-    serverCnName: "统一线下回流服务",
-    env: "pre",
-    file: "TimeoutReportLogger",
-    fileCnName: "",
+    file: "file",
+    fileCnName: "fileCnName",
   },
 ];
 
@@ -82,7 +34,7 @@ function listToTree(dataMap) {
   return tree;
 }
 
-listToTree(list)
+// listToTree(list)
 
 
 const listToTree1 = (list, tree, parentId) => {
@@ -144,4 +96,10 @@ let dataArr = [];
         }        
      });
       return c;
+    }
+
+
+    const obj = {
+      a:1,
+      b:2
     }

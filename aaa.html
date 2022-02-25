@@ -24,18 +24,6 @@
     fileCnName: "",
   },
   {
-    configId: 52,
-    biz: "th",
-    bizCnName: "腾讯健康",
-    app: "thvaccine",
-    appCnName: "疫苗",
-    server: "bizorderserver",
-    serverCnName: "商业疫苗订单",
-    env: "pre",
-    file: "pakcage",
-    fileCnName: "",
-  },
-  {
     configId: 61,
     biz: "mip",
     bizCnName: "医保",
@@ -46,98 +34,120 @@
     env: "pre",
     file: "UserService",
     fileCnName: "",
-  },
-  {
-    configId: 81,
-    biz: "mip",
-    bizCnName: "医保",
-    app: "healthcard",
-    appCnName: "医保",
-    server: "offlinepaymentnotify",
-    serverCnName: "统一线下回流服务",
-    env: "pre",
-    file: "EventReportLogger",
-    fileCnName: "",
-  },
-  {
-    configId: 83,
-    biz: "mip",
-    bizCnName: "医保",
-    app: "healthcard1",
-    appCnName: "医保",
-    server: "offlinepaymentnotify",
-    serverCnName: "统一线下回流服务",
-    env: "pre",
-    file: "TimeoutReportLogger",
-    fileCnName: "",
-  },
+  }
 ];
 
-function listToTree(dataMap) {
-  console.log(dataMap)
-  const tree = [];
-
-  // const temp = {};
-  // dataMap.map(item => temp[item.biz] = item.bizCnName);
-  // const bizList = Object.entries(temp).reduce((acc, cur)=> acc.concat({label: `${cur[0]}(${cur[1]})`, value: cur[0],children:[]}), []);
-
-  dataMap.forEach(data =>{
-    if(tree.length === 0){
-      tree.push({label:data.bizCnName,value:data.biz,children:[]})
-    }
-    tree.forEach(treeItem => {
-      let bizArr = tree.map(e=>e.value) //tree里面所有的biz
-      if(data.biz === treeItem.value){
-        if(treeItem.children.length === 0){
-          treeItem.children.push({label:data.appCnName,value:data.app,children:[]})
+function listToTree(list) {
+      console.log(list);
+      const tree = [];
+      list.forEach(data =>{
+        if (tree.length === 0) {
+          tree.push({label: data.bizCnName, value: data.biz, children: []});
         }
-
-        let appArr = treeItem.children.map(e=>e.value)
-        if(appArr.every(e=>e !== data.app)){
-          treeItem.children.push({label:data.appCnName,value:data.app,children:[]})
+        const bizArr = tree.map(e=>e.value);
+        if (bizArr.every(e=>e !== data.biz)) {
+          tree.push({label: data.bizCnName, value: data.biz, children: []});
         }
-        treeItem.children.forEach(child =>{
-          if(data.app === child.value){
-            if(child.children.length === 0){
-              child.children.push({label:data.serverCnName,value:data.server,configId:data.configId})
-            }
-
-            let serverArr = child.children.map(e=>e.value)
-            if(serverArr.every(e=>e !== data.server)){
-              child.children.push({label:data.serverCnName,value:data.server,configId:data.configId})
-            }
+        tree.forEach(treeItem => {
+          if (treeItem.children.length === 0) {
+            treeItem.children.push({label: `${data.app}(${data.appCnName})`, value: data.app, children: []});
           }
-        })
-      }
 
-      if(bizArr.every(e=>e !== data.biz)){
-        tree.push({label:data.bizCnName,value:data.biz,children:[]})
-      }
-    })    
-  })
+          if (data.biz === treeItem.value) {
+            const appArr = treeItem.children.map(e=>e.value);
+            if (appArr.every(e=>e !== data.app)) {
+              treeItem.children.push({label: `${data.app}(${data.appCnName})`, value: data.app, children: []});
+            }
 
-  return tree;
+            treeItem.children.forEach(child =>{
+              if (child.children.length === 0) {
+                child.children.push({label: `${data.server}(${data.serverCnName})`, value: data.server, children: []});
+              }
+
+              if (data.app === child.value) {
+                const serverArr = child.children.map(e=>e.value);
+                if (serverArr.every(e=>e !== data.server)) {
+                  child.children.push({label: `${data.server}(${data.serverCnName})`, value: data.server, children: []});
+                }
+
+                child.children.forEach(el=>{
+                  if (el.children.length === 0) {
+                    el.children.push({label: data.file, value: data.configId, configId: data.configId});
+                  }
+                  if (data.server === el.value) {
+                    const configArr = el.children.map(e=>e.value);
+                    if (configArr.every(e=>e !== data.configId)) {
+                      el.children.push({label: data.file, value: data.configId, configId: data.configId});
+                    }
+                  }
+                });
+              }
+            });
+          }
+        });
+      });
+      return tree;
+    }
+
+function deepGui(list,tree){
+  // debugger
+list.forEach(data=>{
+  deepa(tree,data,0)
+})
+
 }
 
-function deepGui(data,tree,valKey,labelKey){
-  if(tree.length === 0){
-    tree.push({label:data[labelKey],value:data[valKey],children})
+function deepa(tree,data,index){
+  console.log(index)
+  if(index >3) return
+  const valKeyList = ['biz','app','server','file']
+  const labelKeyList = ['bizCnName','appCnName','serverCnName','configId']
+  const valKey = valKeyList[index];
+  const labelKey = labelKeyList[index];
+  const tempArr = []
+  if(index === 0){
+    if(tree.length === 0){
+      tree.push({label:data[labelKey],value:data[valKey],children:[]})
+    }
+    tempArr[index] = tree.map(e=>e.value);
+    if (tempArr[index].every(e=>e !== data[valKey])) {
+      tree.push({label:data[labelKey],value:data[valKey],children:[]});
+    }
+    deepa(tree,data,++index)
+  }else if(index === 3){
+    tree.forEach(item=>{
+      if (item.children.length === 0) {
+        item.children.push({label: data[labelKey], value: data[valKey]});
+      }
+      if (data[valKeyList[index-1]] === item.value) {
+        tempArr[index] = item.children.map(e=>e.value);
+        if (tempArr[index].every(e=>e !== data[valKey])) {
+          item.children.push({label: data.file, value: data[valKey]});
+        }
+      }
+    });
+  }else{
+    tree.forEach(item=>{
+      if(item.children.length === 0){
+        item.children.push({label:data[labelKey],value:data[valKey],children:[]})
+      }
+      if(data[valKeyList[index-1]] === item.value){
+        tempArr[index] = item.children.map(e=>e.value)
+        if(tempArr[index].every(e=>e !== data[valKey])){
+          item.children.push({label:data[labelKey],value:data[valKey],children:[]})
+        }
+        deepa(item.children,data,++index)
+      }
+    })
   }
-  tree.forEach(item =>{
-    let tempArr = tree.map(e=>e.value)
-    if(data[valKey] === item.value){
-      deepGui()
-    }
-    if(tempArr.every(e !== data[valKey])){
-      tree.push({label:data.bizCnName,value:data.biz,children:[]})
-    }
-  })
+
+
 }
 
+const tree = []
+deepGui(list,tree)
+console.log(tree)
 
-console.log(listToTree(list))
-
-console.log(test())
 
 </script>
 </html>
