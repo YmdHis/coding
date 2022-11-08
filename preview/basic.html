@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="div">点我</div>
+
+    <script>
+        function throttle(func, delay) {
+            let timer, last;
+            return function(...args) {
+                let now = +new Date();
+                if(last && now < last + delay) {
+                    clearTimeout(timer)
+                    timer = setTimeout(()=>{
+                        last = now
+                        func.apply(this, args)
+                    }, delay)
+                }else {
+                    last = now
+                    func.apply(this, args)
+                }
+            }
+        }
+        function notice() {
+            console.log('notice')
+        }
+        let fun = throttle(notice,500)
+        document.getElementById('div').addEventListener('click', ()=> {
+            fun()
+            
+        })
+    </script>
+</body>
+</html>
