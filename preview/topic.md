@@ -155,14 +155,58 @@ new Promise().then(回调)等。
 405 请求的method不允许
 500	服务器发生不可预期的错误
 
+#### cookie sessionStorage localStorage 区别
+共同点：都是保存在浏览器端、且同源的
+
+区别：
+
+cookie数据始终在同源的http请求中携带（即使不需要），即cookie在浏览器和服务器间来回传递，而sessionStorage和localStorage不会自动把数据发送给服务器，仅在本地保存。cookie数据还有路径（path）的概念，可以限制cookie只属于某个路径下
+
+存储大小限制也不同，cookie数据不能超过4K，同时因为每次http请求都会携带cookie、所以cookie只适合保存很小的数据，如会话标识。sessionStorage和localStorage虽然也有存储大小的限制，但比cookie大得多，可以达到5M或更大
+
+数据有效期不同，sessionStorage：仅在当前浏览器窗口关闭之前有效；localStorage：始终有效，窗口或浏览器关闭也一直保存，因此用作持久数据；cookie：只在设置的cookie过期时间之前有效，即使窗口关闭或浏览器关闭
+
+作用域不同，sessionStorage不在不同的浏览器窗口中共享，即使是同一个页面；localstorage在所有同源窗口中都是共享的；cookie也是在所有同源窗口中都是共享的
+
+### cookie
+
+1. cookie 是什么？
+
+cookie 是存储于访问者计算机中的变量。每当一台计算机通过浏览器来访问某个页面时，那么就可以通过 JavaScript 来创建和读取 cookie。
+实际上 cookie 是存于用户硬盘的一个文件，这个文件通常对应于一个域名，当浏览器再次访问这个域名时，便使这个cookie可用。因此，cookie可以跨越一个域名下的多个网页，但不能跨越多个域名使用。
+PS：cookie 和 session 都能保存计算机中的变量，但是 session 是运行在服务器端的，而客户端我们只能通过 cookie 来读取和创建变量
+
+2. cookie 能做什么？
+
+用户在第一次登录某个网站时，要输入用户名密码，如果觉得很麻烦，下次登录时不想输入了，那么就在第一次登录时将登录信息存放在 cookie 中。下次登录时我们就可以直接获取 cookie 中的用户名密码来进行登录。
+
+PS:虽然 浏览器将信息保存在 cookie 中是加密了，但是可能还是会造成不安全的信息泄露
+
+页面之间的传值。在实际开发中，我们往往会通过一个页面跳转到另外一个页面。我们可以将数据保存在 cookie 中，然后在另外页面再去获取 cookie 中的数据。
+
+PS：这里要注意 cookie 的时效性，不然会造成获取 cookie 中数据的混乱。
+
+3. 怎么使用 cookie？
+
+document.cookie = "name=value;expires=evalue; path=pvalue; domain=dvalue; secure;”
+1、name=value 必选参数
+这是一个键值对，分别表示要存入的 属性 和 值。
+
+2、expires=evalue 可选参数
+该对象的有效时间（可选）只支持GTM 标准时间，即要将时间转换，toUTCString()（默认为当前浏览器 会话有用，关闭浏览器就消失）
+
+4.domain=dvalue 可选参数
+用于限制只有设置了的域名才可以访问；如果没有设置，则默认在当前域名访问
+
+### 从输入URL到页面呈现发生了什么？
+
+DNS 查询 找到url的ip地址
+TCP 连接 
+处理请求  返回相应的html给浏览器
+接受响应
+渲染页面
 
 
-
-
-
-
-
-17.学过哪些网络协议，发qq消息是基于tcp还是udp
 
 18.https为什么比http安全
 
@@ -181,7 +225,7 @@ new Promise().then(回调)等。
 
 
 
-从输入URL到页面呈现发生了什么？
+
 
 什么情况下会引发重绘？
 
@@ -197,6 +241,11 @@ import export require
 模块必须采用 ES6 Module 语法，因为 Tree Shaking 依赖 ES6 的静态语法：import 和 export。不同于 ES6 Module，CommonJS 支持动态加载模块，在加载前是无法确定模块是否有被调用，所以并不支持 Tree Shaking 
 
 
+### 运行 npm run XXX
+
+运行 npm run xxx的时候，npm 会先在当前目录的 node_modules/.bin 查找要执行的程序，如果找到则运行；
+没有找到则从全局的 node_modules/.bin 中查找，npm i -g xxx就是安装到到全局目录；
+如果全局目录还是没找到，那么就从 path 环境变量中查找有没有其他同名的可执行程序。
 
 
 
