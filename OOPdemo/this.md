@@ -32,9 +32,26 @@ fn中的参数是一个匿名函数，应用默认绑定，绑定到了window
 
 当函数引用有上下文对象时，隐式绑定规则会把函数调用中的this绑定到这个上下文对象。
 * 隐式丢失
-一个常见的this绑定问题就是被隐式绑定的函数会丢失绑定对象，也就是它会应用默认绑定，把this绑定到window或者undefined上，取决于是否严格模式。
-参数传递也是一种隐式赋值，当传入参数的时候也会被隐式赋值。
++ 使用另一个变量来给函数取别名
++ 将函数作为参数传递时会被隐式赋值，回调函数丢失this绑定
++ 如果你把一个函数当成参数传递到另一个函数的时候，也会发生隐式丢失的问题，且与包裹着它的函数的this指向无关。在非严格模式下，会把该函数的this绑定到window上，严格模式下绑定到undefined。
 
+
+#### 显示绑定
+call apply bind
+如果 foo.bind(obj1).call(obj2)   只取第一个显示绑定的，后面的都无效
+
+
+#### new 绑定
+使用new来调用Person，构造了一个新对象person1并把它(person1)绑定到Person调用中的this。
+```js
+function Person (name) {
+  this.name = name
+}
+var name = 'window'
+var person1 = new Person('LinDaiDai')
+console.log(person1.name)
+```
 
 ##### 箭头函数
 ```js

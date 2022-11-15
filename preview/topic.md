@@ -82,6 +82,70 @@
 	+ WeakMap
 	>只接受对象（null除外）作为键名，键名是弱引用，键值可以是任意的，键名所指向的对象可以被垃圾回收，此时键名是无效的。不能遍历
 
+	#### 5.输出以下代码的结果，why
+
+	```js
+	var obj = {
+    '2': 3,
+    '3': 4,
+    'length': 2,
+    'splice': Array.prototype.splice,
+    'push': Array.prototype.push
+	}
+	obj.push(1)
+	obj.push(2)
+	console.log(obj)
+
+	// result
+	/*
+	Object(4) [empty * 2,1,2,splice: f, push: f]
+
+	因为此处的push是array原型链上的push方法，他会在当前的数字/类数组的length后的一位插入元素
+	此时的length为2，所以obj.push(1)会在索引为2的地方插入,同理obj.push(2)会在索引为3的地方插入。第一项和第二项都没有值，所以是Empty
+	*/
+	```
+
+	#### 以下代码的结果
+	```js
+	function Foo() {
+    Foo.a = function() {
+        console.log(1)
+    }
+    this.a = function() {
+        console.log(2)
+    }
+	}
+	Foo.prototype.a = function() {
+			console.log(3)
+	}
+	Foo.a = function() {
+			console.log(4)
+	}
+	Foo.a();
+	let obj = new Foo();
+	obj.a();
+	Foo.a();
+
+	//result  4 2 1
+	/*
+	function Foo 是Foo的构造方法，没有产生实例的时候没有执行
+	在Foo的原型对象上挂载了a方法，打印3
+	在Foo上直接挂载了a方法，打印4
+	执行Foo.a()，打印4
+	new一个对象，调用Foo的构造函数，即执行了function Foo，第一步把Foo上的方法a替换成了打印1；第二步在实例对象obj上挂载了a方法打印2
+	obj.a()  // 2
+	Foo.a()  // 1
+	*/
+	```
+
+#### 前端埋点使用gif的原因
+
+ + 防止跨域
+ + 通常创建资源节点后只有将对象注入到浏览器DOM树后，浏览器才会实际发送资源请求。反复操作DOM会引发性能问题，而且载入CSS/JS资源还会阻塞页面渲染等。   但是图片请求例外，只需要new Image就能发起请求，而且没有阻塞问题
+ + 相比 PNG/JPG GIF体积最小，节约流量
+ + 并且大多数是1*1的透明GIF。1*1是最小的合法图片，透明也不需要存储色彩数据，节约体积
+
+
 
 10.平时使用的es6语法
 
@@ -101,8 +165,6 @@
 
 15.了解的常见的数据结构
 
-#### typeScript 
-https://juejin.cn/post/6876659541363785735#heading-3
 
 
 #### 事件循环
@@ -126,19 +188,6 @@ process.nextTick
 Promise
 Async/Await(实际就是promise)
 MutationObserver(html5新特性)
-
-#### node事件循环
-macro-task 大概包括：
-setTimeout
-setInterval
-setImmediate
-script（整体代码)
-I/O 操作等。
-
-micro-task 大概包括：
-process.nextTick(与普通微任务有区别，在微任务队列执行之前执行)
-new Promise().then(回调)等。
-
 
 
 

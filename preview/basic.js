@@ -1,3 +1,19 @@
+//instanceof
+function new_instance_of(leftVaule, rightVaule) { 
+    let rightProto = rightVaule.prototype; // 取右表达式的 prototype 值
+    leftVaule = leftVaule.__proto__; // 取左表达式的__proto__值
+    while (true) {
+    	if (leftVaule === null) {
+            return false;	
+        }
+        if (leftVaule === rightProto) {
+            return true;	
+        } 
+        leftVaule = leftVaule.__proto__ 
+    }
+}
+
+
 // 数据类型的检测
 function type(obj) {
     let classMap = []
@@ -26,6 +42,7 @@ function argumentsShow() {
     console.log(arguments)
 }
 //argumentsShow(1,2,3) //[Arguments] { '0': 1, '1': 2, '2': 3 }
+
 
 // 防抖
 function debounce (func, wait = 500, immediate = true) {
@@ -103,6 +120,57 @@ function getQueryParams(qs) {
     }
     return params;
   }
+
+
+// 深拷贝
+function deepClone(obj,hash = new WeakMap()){
+    if(obj instanceof RegExp) return new RegExp(obj);
+    if(obj instanceof Date) return new Date(obj);
+    if(obj === null || typeof obj !== 'object') return obj;
+    //循环引用的情况
+    if(hash.has(obj)){
+        return hash.get(obj)
+    }
+    //new 一个相应的对象
+    //obj为Array，相当于new Array()
+    //obj为Object，相当于new Object()
+    let constr = new obj.constructor();
+    hash.set(obj,constr);
+    for(let key in obj){
+        if(obj.hasOwnProperty(key)){
+            constr[key] = deepClone(obj[key],hash)
+        }
+    }
+    //考虑symbol的情况
+    let symbolObj = Object.getOwnPropertySymbols(obj)
+    for(let i=0;i<symbolObj.length;i++){
+        if(obj.hasOwnProperty(symbolObj[i])){
+            constr[symbolObj[i]] = deepClone(obj[symbolObj[i]],hash)
+        }
+    }
+    return constr
+}
+
+// 柯里化
+function sumFn(a,b,c){return a+ b + c};
+let sum = curry(sumFn);
+sum(2)(3)(5)//10
+sum(2,3)(5)//10
+
+function curry(fn,...args){
+    let fnLen = fn.length,
+        argsLen = args.length;
+    //对比函数的参数和当前传入参数
+    //若参数不够就继续递归返回curry
+    //若参数够就调用函数返回相应的值
+    if(fnLen > argsLen){
+        return function(...arg2s){
+        return curry(fn,...args,...arg2s)
+        }
+    }else{
+        return fn(...args)
+    }
+}
 
 // console.log('script start')
 //   async function async1() {
